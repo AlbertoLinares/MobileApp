@@ -6,23 +6,16 @@ import {
   ScrollView,
   useColorScheme,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import {textStyles, colors} from '../styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import DocumentsHeaderContent from './documents-header-content';
 
-const DocumentsContent = ({data, isLoading, error}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [viewMode, setViewMode] = useState('list');
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+const DocumentsContent = ({data, isLoading, error, viewMode}) => {
   if (isLoading) {
     return (
       <View style={styles.isLoadingContainer}>
-        <ActivityIndicator color={colors.gray} />
+        <ActivityIndicator color={colors.blue} />
       </View>
     );
   }
@@ -38,10 +31,20 @@ const DocumentsContent = ({data, isLoading, error}) => {
 
   if (data?.length) {
     return (
-      <ScrollView style={{...backgroundStyle}}>
-        <DocumentsHeaderContent viewMode={viewMode} setViewMode={setViewMode} />
+      <View style={viewMode === 'grid' ? {...styles.gridContainer} : {}}>
         {data.map(document => {
           const {Attachments, Contributors, ID, Title, Version} = document;
+          if (viewMode === 'grid') {
+            return (
+              <View style={styles.gridItemContainer}>
+                <Text style={{...textStyles.title, marginBottom: 3}}>
+                  {Title}
+                </Text>
+                <Text style={textStyles.subText}>{`Version ${Version}`}</Text>
+              </View>
+            );
+          }
+
           return (
             <View key={ID} style={styles.outerContainer}>
               <View style={styles.innerContainer}>
@@ -83,7 +86,7 @@ const DocumentsContent = ({data, isLoading, error}) => {
             </View>
           );
         })}
-      </ScrollView>
+      </View>
     );
   }
   return (
@@ -94,12 +97,31 @@ const DocumentsContent = ({data, isLoading, error}) => {
 };
 const styles = StyleSheet.create({
   isLoadingContainer: {
-    height: '100%',
+    flex: 1,
     justifyContent: 'center',
   },
-  noDataContainer: {alignItems: 'center', marginTop: 20},
+  gridContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  gridItemContainer: {
+    width: '47.5%',
+    padding: 15,
+    elevation: 2,
+    borderRadius: 5,
+    marginBottom: 15,
+    backgroundColor: colors.white,
+  },
+  noDataContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
   errorContainer: {
-    height: '100%',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -107,7 +129,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     elevation: 2,
     borderRadius: 5,
-    marginVertical: 10,
+    marginBottom: 15,
     backgroundColor: colors.white,
     marginHorizontal: 20,
   },
