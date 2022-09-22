@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TextInput} from 'react-native';
+import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
 import {colors, textStyles} from '../styles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function CreateDocumentContent({id, children, buttonTitle, onPress}) {
+function CreateDocumentContent({buttonTitle, onPress}) {
   const [name, setName] = useState('');
   const [version, setVersion] = useState('');
   return (
@@ -21,6 +21,7 @@ function CreateDocumentContent({id, children, buttonTitle, onPress}) {
         style={styles.textInputStyles}
         placeholder="Placeholder"
         value={version}
+        onChangeText={newValue => setVersion(newValue)}
       />
       <Text style={textStyles.subTitle}>File</Text>
       <View style={styles.fileContainer}>
@@ -33,6 +34,13 @@ function CreateDocumentContent({id, children, buttonTitle, onPress}) {
         <Text style={{...textStyles.subTitle, color: colors.blue}}>
           Choose file
         </Text>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          title={buttonTitle}
+          onPress={() => onPress(name, version)}
+          color={colors.blue}
+        />
       </View>
     </View>
   );
@@ -48,6 +56,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 5,
   },
+  buttonContainer: {marginTop: 20},
   fileContainer: {
     flexDirection: 'row',
     marginTop: 10,

@@ -1,10 +1,10 @@
 import React from 'react';
-import {StyleSheet, View, Button, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import ActionSheet, {SheetManager} from 'react-native-actions-sheet';
 import Icon from 'react-native-vector-icons/Fontisto';
 import {colors, textStyles} from '../styles';
 
-function CustomActionSheet({id, children, buttonTitle, onPress, headerTitle}) {
+function CustomActionSheet({id, children, onPress, headerTitle}) {
   return (
     <ActionSheet
       id={id}
@@ -22,15 +22,11 @@ function CustomActionSheet({id, children, buttonTitle, onPress, headerTitle}) {
         </TouchableOpacity>
       </View>
       {children}
-      <View style={styles.buttonContainer}>
-        <Button title={buttonTitle} onPress={onPress} color={colors.blue} />
-      </View>
     </ActionSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {marginTop: 20},
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

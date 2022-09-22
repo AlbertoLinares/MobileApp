@@ -47,7 +47,7 @@ const DocumentsContent = ({data, isLoading, error, viewMode}) => {
   if (data?.length) {
     return (
       <View style={viewMode === 'grid' ? {...styles.gridContainer} : {}}>
-        {data.map(document => {
+        {data.map((document, index) => {
           const {Attachments, Contributors, ID, Title, Version} = document;
           if (viewMode === 'grid') {
             return (
