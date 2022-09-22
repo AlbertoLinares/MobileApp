@@ -15,6 +15,9 @@ import Header from './components/header';
 import {colors} from './styles';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import DocumentsHeaderContent from './components/documents-header-content';
+import CustomActionSheet from './components/custom-action-sheet';
+import {SheetManager} from 'react-native-actions-sheet';
+import CreateDocumentContent from './components/create-document-content';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -26,8 +29,27 @@ const App = () => {
   };
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState('list');
+  const ws = new WebSocket('ws://localhost:8080/notifications');
+  const [notifications, setNotifications] = useState([]);
 
-  async function fetchData() {
+  const fetchNotification = () => {
+    const serverNotifications = [];
+    ws.onopen = () => {
+      console.log('Connected to the server');
+    };
+    ws.onclose = e => {
+      console.log('Disconnected. Check internet or server.');
+    };
+    ws.onerror = e => {
+      console.log(e.message);
+    };
+    ws.onmessage = e => {
+      serverNotifications.push(e.data);
+      setNotifications([...serverNotifications]);
+    };
+  };
+
+  const fetchData = async () => {
     setIsLoading(true);
     try {
       const response = await fetch('http://localhost:8080/documents', {
@@ -40,10 +62,15 @@ const App = () => {
       setData(await response.json());
       setIsLoading(false);
     } catch (error) {
+      console.log(error);
       setError(error);
       setIsLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchNotification();
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -62,28 +89,35 @@ const App = () => {
         backgroundColor={colors.white}
       />
 
-      <Header />
-      <View style={{...backgroundStyle, ...styles.flex}}>
-        <DocumentsHeaderContent viewMode={viewMode} setViewMode={setViewMode} />
-        <ScrollView
-          contentContainerStyle={styles.flex}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
-          }>
-          <DocumentsContent
-            data={data}
-            isLoading={isLoading}
-            error={error}
-            viewMode={viewMode}
-          />
-        </ScrollView>
-        <View style={styles.buttonContainer}>
-          <Button title={'+ Add document'} color={colors.blue} />
-        </View>
+      <Header notificationNumber={notifications.length} />
+
+      <DocumentsHeaderContent viewMode={viewMode} setViewMode={setViewMode} />
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1}}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }>
+        <DocumentsContent
+          data={data}
+          isLoading={isLoading}
+          error={error}
+          viewMode={viewMode}
+        />
+      </ScrollView>
+      <View style={styles.buttonContainer}>
+        <Button
+          title={'+ Add document'}
+          color={colors.blue}
+          onPress={async () => await SheetManager.show('new_document_sheet')}
+        />
       </View>
+      <CustomActionSheet
+        id={'new_document_sheet'}
+        onPress={() => console.log('action')}
+        buttonTitle={'Submit'}
+        headerTitle={'Add Document'}
+        children={<CreateDocumentContent />}
+      />
     </SafeAreaView>
   );
 };

@@ -3,28 +3,43 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
-  useColorScheme,
   ActivityIndicator,
-  RefreshControl,
+  Button,
+  Alert,
+  Share,
+  TouchableOpacity,
 } from 'react-native';
 import {textStyles, colors} from '../styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
+
+const onShare = async () => {
+  try {
+    const result = await Share.share({
+      message: 'Sharing a document',
+    });
+    if (result.action === Share.sharedAction) {
+      console.log('User is sharing');
+    } else if (result.action === Share.dismissedAction) {
+      console.log('User is dismissing share');
+    }
+  } catch (error) {
+    Alert.alert('ERROR', 'Now it is not possible to share, try later', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => console.log('OK Pressed')},
+    ]);
+  }
+};
 
 const DocumentsContent = ({data, isLoading, error, viewMode}) => {
   if (isLoading) {
     return (
       <View style={styles.isLoadingContainer}>
         <ActivityIndicator color={colors.blue} />
-      </View>
-    );
-  }
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={textStyles.title}>
-          Server Error data is not available.
-        </Text>
       </View>
     );
   }
@@ -48,10 +63,21 @@ const DocumentsContent = ({data, isLoading, error, viewMode}) => {
           return (
             <View key={ID} style={styles.outerContainer}>
               <View style={styles.innerContainer}>
-                <Text style={styles.headerContainer}>
-                  <Text style={textStyles.title}>{Title} </Text>
-                  <Text style={textStyles.subText}>{`Version ${Version}`}</Text>
-                </Text>
+                <View style={styles.headerOuterContainer}>
+                  <Text style={styles.headerContainer}>
+                    <Text style={textStyles.title}>{Title} </Text>
+                    <Text
+                      style={textStyles.subText}>{`Version ${Version}`}</Text>
+                  </Text>
+                  <TouchableOpacity onPress={onShare}>
+                    <FontistoIcon
+                      name={'share'}
+                      size={12}
+                      color={colors.gray}
+                    />
+                  </TouchableOpacity>
+                </View>
+
                 <View style={{flexDirection: 'row'}}>
                   <View style={{flex: 1}}>
                     <View style={styles.columnContainer}>
@@ -89,6 +115,17 @@ const DocumentsContent = ({data, isLoading, error, viewMode}) => {
       </View>
     );
   }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={textStyles.title}>
+          Server Error data is not available.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.noDataContainer}>
       <Text style={textStyles.title}>Documents are empty.</Text>
@@ -99,6 +136,11 @@ const styles = StyleSheet.create({
   isLoadingContainer: {
     flex: 1,
     justifyContent: 'center',
+  },
+  headerOuterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   gridContainer: {
     flex: 1,
@@ -129,7 +171,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     elevation: 2,
     borderRadius: 5,
-    marginBottom: 15,
+    marginVertical: 5,
     backgroundColor: colors.white,
     marginHorizontal: 20,
   },

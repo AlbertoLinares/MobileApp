@@ -43,7 +43,8 @@ const DocumentsHeaderContent = ({setViewMode, viewMode}) => {
 };
 const styles = StyleSheet.create({
   headerContainer: {
-    marginVertical: 15,
+    marginBottom: 10,
+    marginTop: 15,
     paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
