@@ -17,7 +17,6 @@ import DocumentsHeaderContent from './documents-header-content';
 import CustomActionSheet from './custom-action-sheet';
 import {SheetManager} from 'react-native-actions-sheet';
 import CreateDocumentContent from './create-document-content';
-import {Notifications} from 'react-native-notifications';
 
 const ApplicationLoader = () => {
   const isDarkMode = useColorScheme() === 'dark';
