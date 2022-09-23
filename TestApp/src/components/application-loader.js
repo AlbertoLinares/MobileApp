@@ -9,24 +9,21 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-
-import DocumentsContent from './components/documents-content';
-import Header from './components/header';
-import {colors} from './styles';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import DocumentsHeaderContent from './components/documents-header-content';
-import CustomActionSheet from './components/custom-action-sheet';
+import {useApi} from '../context/api';
+import DocumentsContent from './documents-content';
+import Header from './header';
+import {colors} from '../styles';
+import DocumentsHeaderContent from './documents-header-content';
+import CustomActionSheet from './custom-action-sheet';
 import {SheetManager} from 'react-native-actions-sheet';
-import CreateDocumentContent from './components/create-document-content';
+import CreateDocumentContent from './create-document-content';
 
-const App = () => {
+const ApplicationLoader = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const [data, setData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const {
+    state: {isError, apiData, isLoading},
+    refetchData,
+  } = useApi();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState('list');
   const ws = new WebSocket('ws://localhost:8080/notifications');
@@ -49,40 +46,18 @@ const App = () => {
     };
   };
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:8080/documents', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      });
-      setData(await response.json());
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setError(error);
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchNotification();
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchData();
+    refetchData();
     setIsRefreshing(false);
   }, []);
 
   const handleCreateDocument = async ({name, version}) => {
+    return null;
     data.push({
       Attachments: ['Test1', 'Test2'],
       Contributors: [
@@ -115,9 +90,9 @@ const App = () => {
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }>
         <DocumentsContent
-          data={data}
+          data={apiData}
           isLoading={isLoading}
-          error={error}
+          error={isError}
           viewMode={viewMode}
         />
       </ScrollView>
@@ -147,4 +122,4 @@ const styles = StyleSheet.create({
   flex: {flex: 1},
 });
 
-export default App;
+export default ApplicationLoader;
