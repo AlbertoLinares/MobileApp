@@ -32,6 +32,12 @@ function reducer(state, action) {
         apiData: action.payload.data,
       };
     }
+    case 'POST': {
+      return {
+        ...state,
+        apiData: action.payload.data,
+      };
+    }
   }
 }
 
@@ -70,12 +76,38 @@ function Provider({children}) {
     initialize();
   }
 
+  function postDocument({name, version}) {
+    const newData = [
+      ...state.apiData,
+      {
+        Attachments: ['Test1', 'Test2'],
+        Contributors: [
+          {ID: 'd3fe1bc2-ce9d-44be-9ddc-300e8a1ba5bc', Name: 'Test3'},
+          {ID: 'c606519f-d396-4f61-abcd-63805d43c6bf', Name: 'Test4'},
+        ],
+        CreatedAt: '1931-01-01T04:28:43.806669208Z',
+        ID: '234eba5e-25ae-4b04-a0c5-2811cfe65716',
+        Title: name,
+        UpdatedAt: '1943-03-28T18:43:25.650935533Z',
+        Version: version,
+      },
+    ];
+    dispatch({
+      type: 'POST',
+      payload: {
+        data: newData,
+      },
+    });
+  }
+
   useEffect(() => {
     initialize();
   }, []);
 
   return (
-    <Context.Provider value={{state, refetchData}}>{children}</Context.Provider>
+    <Context.Provider value={{state, refetchData, postDocument}}>
+      {children}
+    </Context.Provider>
   );
 }
 

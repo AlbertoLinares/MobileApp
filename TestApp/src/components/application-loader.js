@@ -17,12 +17,14 @@ import DocumentsHeaderContent from './documents-header-content';
 import CustomActionSheet from './custom-action-sheet';
 import {SheetManager} from 'react-native-actions-sheet';
 import CreateDocumentContent from './create-document-content';
+import {Notifications} from 'react-native-notifications';
 
 const ApplicationLoader = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const {
     state: {isError, apiData, isLoading},
     refetchData,
+    postDocument,
   } = useApi();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState('list');
@@ -41,6 +43,7 @@ const ApplicationLoader = () => {
       console.log(e.message);
     };
     ws.onmessage = e => {
+      console.log(e.data);
       serverNotifications.push(e.data);
       setNotifications([...serverNotifications]);
     };
@@ -57,20 +60,7 @@ const ApplicationLoader = () => {
   }, []);
 
   const handleCreateDocument = async ({name, version}) => {
-    return null;
-    data.push({
-      Attachments: ['Test1', 'Test2'],
-      Contributors: [
-        {ID: 'd3fe1bc2-ce9d-44be-9ddc-300e8a1ba5bc', Name: 'Test3'},
-        {ID: 'c606519f-d396-4f61-abcd-63805d43c6bf', Name: 'Test4'},
-      ],
-      CreatedAt: '1931-01-01T04:28:43.806669208Z',
-      ID: '234eba5e-25ae-4b04-a0c5-2811cfe65716',
-      Title: name,
-      UpdatedAt: '1943-03-28T18:43:25.650935533Z',
-      Version: version,
-    });
-    setData(data);
+    postDocument({name, version});
     await SheetManager.hide('new_document_sheet');
   };
 

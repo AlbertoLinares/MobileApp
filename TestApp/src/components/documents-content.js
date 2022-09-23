@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   Text,
   View,
   ActivityIndicator,
-  Button,
   Alert,
   Share,
   TouchableOpacity,
@@ -88,7 +87,7 @@ const DocumentsContent = ({data, isLoading, error, viewMode}) => {
                       />
                       <Text style={textStyles.subTitle}>Contributors</Text>
                     </View>
-                    {Contributors.map((contributor, index) => (
+                    {Contributors.map(contributor => (
                       <Text style={textStyles.regularText}>
                         {contributor.Name}
                       </Text>
@@ -103,7 +102,7 @@ const DocumentsContent = ({data, isLoading, error, viewMode}) => {
                       />
                       <Text style={textStyles.subTitle}>Attachments</Text>
                     </View>
-                    {Attachments.map((attachment, index) => (
+                    {Attachments.map(attachment => (
                       <Text style={textStyles.regularText}>{attachment}</Text>
                     ))}
                   </View>
