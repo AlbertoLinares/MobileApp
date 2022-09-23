@@ -73,7 +73,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 5,
   },
-  buttonContainer: {marginBottom: 35, marginTop: 20},
+  buttonContainer: {
+    marginBottom: Platform.OS === 'android' ? 0 : 35,
+    marginTop: 20,
+  },
   fileContainer: {
     flexDirection: 'row',
     marginTop: 10,
