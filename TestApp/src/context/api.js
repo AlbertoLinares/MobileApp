@@ -66,8 +66,6 @@ function Provider({children}) {
       });
     }
 
-    console.log(apiResponse);
-
     dispatch({
       type: 'INITIALIZE_SUCCESS',
       payload: {data: await apiResponse.json()},
