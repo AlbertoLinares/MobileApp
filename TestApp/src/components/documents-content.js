@@ -149,13 +149,17 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
+    paddingTop: 5,
   },
   gridItemContainer: {
     width: '47.5%',
     padding: 15,
     elevation: 2,
+    shadowColor: colors.darkGray,
+    shadowOffset: {height: 2},
+    shadowOpacity: 0.5,
     borderRadius: 5,
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: colors.white,
   },
   noDataContainer: {
@@ -171,6 +175,9 @@ const styles = StyleSheet.create({
   iconStyles: {marginRight: 5},
   outerContainer: {
     elevation: 2,
+    shadowColor: colors.darkGray,
+    shadowOffset: {height: 2},
+    shadowOpacity: 0.5,
     borderRadius: 5,
     marginVertical: 5,
     backgroundColor: colors.white,

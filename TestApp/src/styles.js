@@ -7,6 +7,7 @@ export const colors = {
   darkGray: '#606060',
   gray: '#AEAEAE',
   blue: '#0074FF',
+  background: '#F7F7F7',
 };
 
 export const textStyles = StyleSheet.create({

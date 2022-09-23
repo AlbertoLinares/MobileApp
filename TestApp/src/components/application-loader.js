@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import {useApi} from '../context/api';
 import DocumentsContent from './documents-content';
@@ -27,28 +28,28 @@ const ApplicationLoader = () => {
   } = useApi();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState('list');
-  // const ws = new WebSocket('ws://localhost:8080/notifications');
+  const ws = new WebSocket('ws://localhost:8080/notifications');
   const [notifications, setNotifications] = useState([]);
 
-  // const fetchNotification = () => {
-  //   const serverNotifications = [];
-  //   ws.onopen = () => {
-  //     console.log('Connected to the server');
-  //   };
-  //   ws.onclose = e => {
-  //     console.log('Disconnected. Check internet or server.');
-  //   };
-  //   ws.onerror = e => {
-  //     console.log(e.message);
-  //   };
-  //   ws.onmessage = e => {
-  //     serverNotifications.push(e.data);
-  //     setNotifications([...serverNotifications]);
-  //   };
-  // };
+  const fetchNotification = () => {
+    const serverNotifications = [];
+    ws.onopen = () => {
+      console.log('Connected to the server');
+    };
+    ws.onclose = e => {
+      console.log('Disconnected. Check internet or server.');
+    };
+    ws.onerror = e => {
+      console.log(e.message);
+    };
+    ws.onmessage = e => {
+      serverNotifications.push(e.data);
+      setNotifications([...serverNotifications]);
+    };
+  };
 
   useEffect(() => {
-    //fetchNotification();
+    fetchNotification();
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -63,7 +64,7 @@ const ApplicationLoader = () => {
   };
 
   return (
-    <SafeAreaView style={styles.flex}>
+    <SafeAreaView style={{...styles.flex, backgroundColor: colors.background}}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={colors.white}
@@ -73,7 +74,9 @@ const ApplicationLoader = () => {
 
       <DocumentsHeaderContent viewMode={viewMode} setViewMode={setViewMode} />
       <ScrollView
-        contentContainerStyle={{flexGrow: 1}}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }>
@@ -85,11 +88,23 @@ const ApplicationLoader = () => {
         />
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <Button
-          title={'+ Add document'}
-          color={colors.blue}
-          onPress={async () => await SheetManager.show('new_document_sheet')}
-        />
+        {Platform.OS === 'android' ? (
+          <Button
+            title={'+ Add document'}
+            color={colors.blue}
+            onPress={async () => await SheetManager.show('new_document_sheet')}
+          />
+        ) : (
+          <View style={styles.iosButtonContainer}>
+            <Button
+              title={'+ Add document'}
+              color={colors.white}
+              onPress={async () =>
+                await SheetManager.show('new_document_sheet')
+              }
+            />
+          </View>
+        )}
       </View>
       <CustomActionSheet
         id={'new_document_sheet'}
@@ -106,8 +121,13 @@ const ApplicationLoader = () => {
 };
 
 const styles = StyleSheet.create({
-  buttonContainer: {padding: 15},
+  buttonContainer: {
+    padding: 15,
+    borderTopWidth: 0.5,
+    borderTopColor: colors.lightGray,
+  },
   flex: {flex: 1},
+  iosButtonContainer: {backgroundColor: colors.blue, borderRadius: 5},
 });
 
 export default ApplicationLoader;

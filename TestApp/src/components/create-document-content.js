@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TextInput, Button} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Button,
+  Platform,
+} from 'react-native';
 import {colors, textStyles} from '../styles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -36,11 +43,21 @@ function CreateDocumentContent({buttonTitle, onPress}) {
         </Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Button
-          title={buttonTitle}
-          onPress={() => onPress(name, version)}
-          color={colors.blue}
-        />
+        {Platform.OS === 'android' ? (
+          <Button
+            title={buttonTitle}
+            onPress={() => onPress(name, version)}
+            color={colors.blue}
+          />
+        ) : (
+          <View style={styles.iosButtonContainer}>
+            <Button
+              title={buttonTitle}
+              onPress={() => onPress(name, version)}
+              color={colors.white}
+            />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -56,7 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 5,
   },
-  buttonContainer: {marginTop: 20},
+  buttonContainer: {marginBottom: 35, marginTop: 20},
   fileContainer: {
     flexDirection: 'row',
     marginTop: 10,
@@ -69,6 +86,7 @@ const styles = StyleSheet.create({
   },
   iconStyles: {marginRight: 7},
   headerStyles: {...textStyles.title, marginBottom: 10},
+  iosButtonContainer: {backgroundColor: colors.blue, borderRadius: 5},
 });
 
 export default CreateDocumentContent;
