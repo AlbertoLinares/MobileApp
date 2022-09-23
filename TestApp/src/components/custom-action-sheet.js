@@ -4,7 +4,7 @@ import ActionSheet, {SheetManager} from 'react-native-actions-sheet';
 import Icon from 'react-native-vector-icons/Fontisto';
 import {colors, textStyles} from '../styles';
 
-function CustomActionSheet({id, children, onPress, headerTitle}) {
+function CustomActionSheet({id, children, headerTitle}) {
   return (
     <ActionSheet
       id={id}

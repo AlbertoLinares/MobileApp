@@ -27,29 +27,28 @@ const ApplicationLoader = () => {
   } = useApi();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState('list');
-  const ws = new WebSocket('ws://localhost:8080/notifications');
+  // const ws = new WebSocket('ws://localhost:8080/notifications');
   const [notifications, setNotifications] = useState([]);
 
-  const fetchNotification = () => {
-    const serverNotifications = [];
-    ws.onopen = () => {
-      console.log('Connected to the server');
-    };
-    ws.onclose = e => {
-      console.log('Disconnected. Check internet or server.');
-    };
-    ws.onerror = e => {
-      console.log(e.message);
-    };
-    ws.onmessage = e => {
-      console.log(e.data);
-      serverNotifications.push(e.data);
-      setNotifications([...serverNotifications]);
-    };
-  };
+  // const fetchNotification = () => {
+  //   const serverNotifications = [];
+  //   ws.onopen = () => {
+  //     console.log('Connected to the server');
+  //   };
+  //   ws.onclose = e => {
+  //     console.log('Disconnected. Check internet or server.');
+  //   };
+  //   ws.onerror = e => {
+  //     console.log(e.message);
+  //   };
+  //   ws.onmessage = e => {
+  //     serverNotifications.push(e.data);
+  //     setNotifications([...serverNotifications]);
+  //   };
+  // };
 
   useEffect(() => {
-    fetchNotification();
+    //fetchNotification();
   }, []);
 
   const handleRefresh = useCallback(() => {
