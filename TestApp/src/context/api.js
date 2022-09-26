@@ -1,4 +1,6 @@
 import React, {createContext, useContext, useEffect, useReducer} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getDocuments from '../services/getDocuments';
 
 export const initialState = {
   isLoading: false,
@@ -7,6 +9,8 @@ export const initialState = {
 };
 
 const Context = createContext(initialState);
+
+export const ApiContext = Context;
 
 function reducer(state, action) {
   switch (action.type) {
@@ -44,39 +48,44 @@ function reducer(state, action) {
 function Provider({children}) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  function fetchData() {
+    getDocuments().then(async documents => {
+      if (documents) {
+        await AsyncStorage.setItem('documents', JSON.stringify(documents));
+        return dispatch({
+          type: 'INITIALIZE_SUCCESS',
+          payload: {data: documents},
+        });
+      }
+      return dispatch({
+        type: 'INITIALIZE_ERROR',
+        payload: {error: true},
+      });
+    });
+  }
+
   async function initialize() {
     dispatch({
       type: 'INITIALIZE_BEGIN',
     });
 
-    let apiResponse;
+    const initialApiData = await AsyncStorage.getItem('documents');
 
-    try {
-      apiResponse = await fetch('http://localhost:8080/documents', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      });
-    } catch (error) {
+    if (initialApiData) {
       return dispatch({
-        type: 'INITIALIZE_ERROR',
-        payload: {error},
+        type: 'INITIALIZE_SUCCESS',
+        payload: {data: JSON.parse(initialApiData)},
       });
     }
 
-    dispatch({
-      type: 'INITIALIZE_SUCCESS',
-      payload: {data: await apiResponse.json()},
-    });
+    fetchData();
   }
 
   async function refetchData() {
-    initialize();
+    fetchData();
   }
 
-  function postDocument({name, version}) {
+  async function postDocument({name, version}) {
     const newData = [
       ...state.apiData,
       {
@@ -92,6 +101,7 @@ function Provider({children}) {
         Version: version,
       },
     ];
+    await AsyncStorage.setItem('documents', JSON.stringify(newData));
     dispatch({
       type: 'POST',
       payload: {
@@ -112,15 +122,3 @@ function Provider({children}) {
 }
 
 export const ApiProvider = Provider;
-
-function Hook() {
-  const context = useContext(Context);
-
-  if (context === undefined) {
-    throw new Error('useApi must be used within a ApiProvider');
-  }
-
-  return context;
-}
-
-export const useApi = Hook;

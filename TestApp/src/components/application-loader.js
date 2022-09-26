@@ -10,7 +10,7 @@ import {
   RefreshControl,
   Platform,
 } from 'react-native';
-import {useApi} from '../context/api';
+import useApi from '../hooks/useApi';
 import DocumentsContent from './documents-content';
 import Header from './header';
 import {colors} from '../styles';
